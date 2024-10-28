@@ -32,26 +32,22 @@ type Args = {
 }
 
 export const migrate = async ({ config, parsedArgs }: Args): Promise<void> => {
-  const { _: args, file, forceAcceptWarning: forceAcceptFromProps, help } = parsedArgs
+  const { file, forceAcceptWarning: forceAcceptFromProps, help, ...args } = parsedArgs
 
-  const formattedArgs = Object.keys(parsedArgs || {})
-    .map((key) => {
-      const formattedKey = key.replace(/^[-_]+/, '')
-      if (!formattedKey) {
-        return null
-      }
-
-      return formattedKey
+  const formattedArgs = Object.keys(args)
+    .map((key) =>
+      key
+        .replace(/^[-_]+/, '')
         .split('-')
         .map((word, index) =>
           index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1),
         )
-        .join('')
-    })
+        .join(''),
+    )
     .filter(Boolean)
 
-  const forceAcceptWarning = forceAcceptFromProps || formattedArgs?.includes('forceAcceptWarning')
-  const skipVerify = formattedArgs?.includes('skipVerify')
+  const forceAcceptWarning = forceAcceptFromProps || formattedArgs.includes('forceAcceptWarning')
+  const skipVerify = formattedArgs.includes('skipVerify')
 
   if (help) {
     // eslint-disable-next-line no-console
